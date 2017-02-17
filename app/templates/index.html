@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{%  block content %}
+<div class="Instructions">
+    <h3 data-tooltip="I’m the tooltip text.">
+        The webpage is used to find if there has been updates to PDF files on a website.<br><br>
+        To use the web scraper, Sign up and then go to the Web Scraping Tool Page, and copy and paste the url of webpage you want to check and hit the search button.<br><br>
+        This will then allow you to see what PDF's have been updated and when on a table below the search bar.
+    </h3>
+</div>
+{% if not User %}
+    <div class="Account">
+        <div class="col-xs-12 col-md-6 signup">
+            <form data-toggle="validator" role="form" class="form-horizontal" method="POST" action="/signup">
+                <fieldset>
+                    <legend>Sign Up</legend>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="signupUsername">Username</label>
+                        <div class="col-md-5">
+                            <input id="signupUsername" name="signupUsername" type="text" placeholder="" class="form-control input-md" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="signupEmail">Email</label>
+                        <div class="col-md-5">
+                            <input id="signupEmail" name="signupEmail" type="email" placeholder="someone@example.com" class="form-control input-md" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="signupPassword">Password</label>
+                        <div class="col-md-5">
+                            <input type="password" name="signupPassword" data-minlength="6" class="form-control" id="signupPassword" placeholder="******" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="signupPasswordConfirm">Confirm Password</label>
+                        <div class="col-md-5">
+                            <input type="password" name="signupPasswordConfirm" class="form-control" id="signupPasswordConfirm" placeholder="******" required>
+                            <div class="help-block with-errors"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="singlebutton"></label>
+                        <div class="col-md-4">
+                            <input id="signup" type="submit" value="Sign Up" name="singlebutton" class="btn btn-primary">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+        <div class="col-xs-12 col-md-6 login">
+            <form class="form-horizontal" method="POST" action="/login">
+                <fieldset>
+                    <legend>Login</legend>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="loginUsername">Username</label>
+                        <div class="col-md-5">
+                            <input id="loginUsername" name="loginUsername" type="text" placeholder="" class="form-control input-md" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="loginPassword">Password</label>
+                        <div class="col-md-5">
+                            <input id="loginPassword" name="loginPassword" type="password" placeholder="********" class="form-control input-md" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-4 control-label" for="singlebutton"></label>
+                        <div class="col-md-4">
+                            <input id="login" type="submit" value="Login" name="singlebutton" class="btn btn-primary">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+{% endif %}
+{% if User %}
+    <div class="Scraper">
+        <div class="col-xs-12">
+            <form class="form-horizontal" method="POST" action="/send">
+                <label class="col-md-4 control-label" for="webpage">Website</label>
+                <div class="col-md-4">
+                    <input id="webpage" name="webpage" type="text" placeholder="https://www." class="form-control input-md" required="">
+                    <span class="help-block">E.G "https://www.google.co.uk/"</span>
+                </div>
+                <label class="col-md-4 control-label" for="search"></label>
+                <div class="col-md-4">
+                    <button id="search" name="search" class="btn btn-success">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="data">
+        {% if Data %}
+            <h2  align="center">PDF's</h2>
+            <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5", width="50%", align="center">
+                <tr>
+                    <td>File Address</td>
+                    <td>Status</td>
+                </tr>
+                {% for tuple in Data %}
+                    <tr>
+                        <td><a href="{{ tuple[0] }}">{{ tuple[0] }}</a></td>
+                        <td>{{ tuple[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+{% endif %}
+{%  endblock %}

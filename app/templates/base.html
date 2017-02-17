@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }}</title>
+        {% else %}
+        <title>Web Scraping</title>
+        {% endif %}
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}">
+
+        <script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    </head>
+    <body>
+        <div class="header">
+            <div class="jumbotron">
+                <h1>Web Scraping Tool</h1>
+                <h3>Please use the tools below.</h3>
+            </div>
+        </div>
+        <div class="content">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </body>
+</html>

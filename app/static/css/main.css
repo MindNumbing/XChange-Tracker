@@ -1,0 +1,18 @@
+/*
+
+    Base: Heading
+
+ */
+.jumbotron{
+	background-color:#9A9A9A;
+	margin-bottom:0px;
+	padding-top:5px;
+	padding-bottom:5px;
+	width:100%;
+}
+.jumbotron h1{
+	padding-left:5%;
+}
+.jumbotron h3{
+	padding-left: 5%;
+}
