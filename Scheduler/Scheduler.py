@@ -1,26 +1,36 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from DB import Controls
 from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing import cpu_count
 
 def StartSoup():
     sched = BackgroundScheduler()
-    sched.add_job(CheckFiles, 'interval', minutes=60)
+    sched.add_job(CheckFiles, 'interval', seconds=20)
     sched.start()
+    print('Scheduler has been started')
 
 def CheckFiles():
-    pool = ThreadPool(4)
+    associations = Controls.GetAllAssocations()
+    print('Number of Files : "%s"' % (len(associations)))
 
-    files = Controls.GetAllFiles()
+    numberOfProcesses = (cpu_count() * 2)
+    print('Number of Processes : "%s"' % (numberOfProcesses))
+    pool = ThreadPool(numberOfProcesses)
 
-    users = pool.map_async(Controls.GetAllAssocations, (files))
+    print('Printing files : %s' % (associations))
 
-    print('Multi Result : %s' + users)
+    args = []
+    for association in associations:
+        args.append((association[0], association[1]))
+    print('Args : "%s"' % (args))
+    Data = pool.map_async(Controls.SchedulerCompareFile, args)
+
+    print('Gonna Close')
 
     pool.close()
     pool.join()
 
-    #files = Controls.GetAllFiles()
-    #for file in files:
-    #    users = Controls.GetAllAssocations(file)
-    #    for user in users:
-    #        Controls.CompareFile(file, users)
+    Data = Data.get()
+
+    for file in Data:
+        print('File Address : "%s" File Message : "%s" ' % (file[0], file[1]))

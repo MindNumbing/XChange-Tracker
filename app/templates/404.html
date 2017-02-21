@@ -1,0 +1,8 @@
+{%  block content %}
+    <h1 align="center">404 Page Not Found</h1>
+    <p align="center">What you were looking for is just not there.
+    <p align="center"><a href="{{ url_for('index') }}">Go somewhere nicer</a>
+    <div>
+        <img src="{{ url_for('static', filename='img/404.jpg') }}" style="margin-top: 6%; margin-bottom: 12.5%; margin-left: 30% ">
+    </div>
+{%  endblock %}

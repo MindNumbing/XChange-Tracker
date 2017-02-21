@@ -1,19 +1,16 @@
-from sqlalchemy import *
-from sqlalchemy.orm import mapper, sessionmaker, scoped_session
+from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
-import os
+from os import path
 from passlib.hash import pbkdf2_sha512
 import hashlib
 from urllib.request import urlopen
 import random
-import threading
-from app import views
 
 Base = declarative_base()
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-engine = create_engine('sqlite:///' + os.path.join(basedir, 'application.db'))
+basedir = path.abspath(path.dirname(__file__))
+engine = create_engine('sqlite:///' + path.join(basedir, 'application.db'))
 
 metadata = MetaData(bind=engine)
 
@@ -85,27 +82,19 @@ def ValidateUser(username, password):
         return 0
 
 def CheckFileExists(args):
-    # This function checks if the file already exists on the database.
-    # If it does already exist:
-    #   it runs a check on whether the user is associated
-    #   if the file is associated with the user, it checks whether there have been changes to the file
-    #   if the file is not associated with the user, it creates an association with the
-    # if it don't already exist, it adds the file to the database and creates an association for the user
-
+    #print('Checking File : "%s" for User : "%s"' % (url, userid))
     url    = args[0]
     userid = args[1]
-
-    #print('Checking File : "%s" for User : "%s"' % (url, userid))
 
     # Creates a session on the database
     session = Session()
 
     if session.query(File).filter_by(address=url).count() > 0:
         # File exists on the database
-        user = session.query(Account).filter_by(id=userid)
-        file = session.query(File).filter_by(address=url)
+        user = session.query(Account).filter_by(id=userid).first()
+        file = session.query(File).filter_by(address=url).first()
 
-        if session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).count > 0:
+        if session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).count() > 0:
             #File exists for user
             result = CompareFile(url, userid)
         else:
@@ -155,13 +144,14 @@ def CompareFile(url, userid):
 
     user = session.query(Account).filter_by(id=userid).first()
     file = session.query(File).filter_by(address=url).first()
-
     accountfile = session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).first()
+    session.close()
 
     new_hash = GetHash(url)
     last_hash = accountfile.last_hash
 
     if new_hash != last_hash:
+        session = Session()
         #hash has changed
         #print('File : %s has changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
         #Store new hash as last_hash
@@ -170,6 +160,38 @@ def CompareFile(url, userid):
         session.close()
         return (url, 'File has changed')
     elif new_hash != last_hash:
+        #Hash has not changed
+        #print('File : %s has not changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
+        return (url, 'File not changed')
+    session.close()
+
+def SchedulerCompareFile(args):
+    userid = args[0]
+    fileid = args[1]
+    #print('Comparing file : "%s" for user : "%s' % (url, userid))
+
+    session = Session()
+
+    user = session.query(Account).filter_by(id=userid).first()
+    file = session.query(File).filter_by(id=fileid).first()
+    accountfile = session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).first()
+    session.close()
+
+    url = file.address
+
+    new_hash = GetHash(file.address)
+    last_hash = accountfile.last_hash
+
+    if new_hash != last_hash:
+        session = Session()
+        #hash has changed
+        #print('File : %s has changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
+        #Store new hash as last_hash
+        accountfile.last_hash = file.hash
+        session.commit()
+        session.close()
+        return (url, 'File has changed')
+    elif new_hash == last_hash:
         #Hash has not changed
         #print('File : %s has not changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
         return (url, 'File not changed')
@@ -201,20 +223,48 @@ def GetAllFiles():
 
     return files
 
-def GetAllAssocations(url):
-    #print('Getting all associations of File : "%s"' % (url))
-
+def GetAllAssocations():
     session = Session()
 
-    file = session.query(File).filter_by(address=url)
-    accountfiles = session.query(AccountFile).filter_by(file_id=file.id).all()
+    accountfiles = session.query(AccountFile)
 
-    users = []
-
+    associations = []
     for accountfile in accountfiles:
-        #print('Account File : "%s"' % (accountfile))
-        users.append(accountfile.account_id)
+        associations.append((accountfile.account_id, accountfile.file_id))
 
     session.close()
 
-    return users
+    return associations
+
+def sendEmail(email, username):
+    import smtplib
+    SUBJECT = "Changed pdf's"
+    TEXT = "Hi " + username + ", here are the list of pdfs that have been changed this week: \n" + str(PDFlist)
+
+    content = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
+    s = smtplib.SMTP('smtp.live.com', 587)
+    s.ehlo()
+    s.starttls()
+    s.login('pdfsender@hotmail.com', 'Ilovepdf1')
+
+    s.sendmail('pdfsender@hotmail.com', email, content)
+    s.quit()
+    print("Email sent" + email)
+
+
+def ConfirmEmail(email,username):
+    import smtplib
+
+
+    SUBJECT = "Welcome to the PDF scraper"
+    TEXT = "Hi " + username + ", you have now signed up to the web scraping website. We hope you enjoy this service. \n"
+
+    content = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
+    s = smtplib.SMTP('smtp.live.com', 587)
+    s.ehlo()
+    s.starttls()
+    s.login('pdfsender@hotmail.com', 'Ilovepdf1')
+
+    s.sendmail('pdfsender@hotmail.com', email, content)
+    s.quit()
+    print("Email sent" + email)
