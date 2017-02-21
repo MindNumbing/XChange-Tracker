@@ -40,47 +40,47 @@ def signup():
     if request.method == "POST":
 
         username        = request.form['signupUsername']
+        email           = request.form['signupEmail']
         password        = request.form['signupPassword']
         confirmpassword = request.form['signupPasswordConfirm']
-        email = request.form['signupEmail']
 
-        digitcheck = contains_digits(password)
-        capscheck = contains_uppercase(password)
-        common = contains_common(password)
+        digitcheck      = contains_digits(password)
+        capscheck       = contains_uppercase(password)
+        common          = contains_common(password)
 
         # Username is empty
         if username == None:
+            session['error'] = "Username is empty"
             return redirect(request.url_root + 'index', code=302)
-
-        elif email ==None:
+        elif email == None:
+            session['error'] = "Email is empty"
             return redirect(request.url_root + 'index', code=302)
-
-            # the next set of checks makes sure the password is a certain length and contains a number and a capital letter
+        elif Controls.CheckUsernameUnique(username) == False:
+            session['error'] = "Username already exists"
+            return redirect(request.url_root + 'index', code=302)
+        elif Controls.CheckEmailUnique(email) == False:
+            session['error'] = "Email already exists"
+            return redirect(request.url_root + 'index', code=302)
         elif capscheck == False:
             session['error'] = "Password must contain a capital letter"
             return redirect(request.url_root + 'index', code=302)
-
         elif digitcheck != True:
             session['error'] = "Must have a number"
             return redirect(request.url_root + 'index', code=302)
-
         elif len(str(password)) < 10:
             session['error'] = "Password must be at least 10 characters"
             return redirect(request.url_root + 'index', code=302)
-
         elif common != False:
             session['error'] = "Password is too common"
             return redirect(request.url_root + 'index', code=302)
-
-
-        # Password is empty
         elif password == None:
+            session['error'] = "Password is empty"
             return redirect(request.url_root + 'index', code=302)
-        #Confirm password is empty
         elif confirmpassword == None:
+            session['error'] = "Confirm Password is empty"
             return redirect(request.url_root + 'index', code=302)
-        # If Password and Confirm aren't the same
         elif password != confirmpassword:
+            session['error'] = "Password and Confirm password do not match"
             return redirect(request.url_root + 'index', code=302)
         else:
             username = request.form['signupUsername']

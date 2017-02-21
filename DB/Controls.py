@@ -236,6 +236,32 @@ def GetAllAssocations():
 
     return associations
 
+def CheckUsernameUnique(username):
+
+    session = Session()
+
+    user = session.query(Account).filter_by(username=username).first()
+
+    session.close()
+
+    if user is None:
+        return True
+    else:
+        return False
+
+def CheckEmailUnique(email):
+
+    session = Session()
+
+    user = session.query(Account).filter_by(email=email).first()
+
+    session.close()
+
+    if user is None:
+        return True
+    else:
+        return False
+
 def sendEmail(email, username):
     import smtplib
     SUBJECT = "Changed pdf's"
