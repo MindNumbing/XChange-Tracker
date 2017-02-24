@@ -6,6 +6,7 @@ from passlib.hash import pbkdf2_sha512
 import hashlib
 from urllib.request import urlopen
 import random
+import copy
 
 Base = declarative_base()
 
@@ -55,14 +56,11 @@ def AddUser(username, email, password):
         return 0
 
 def ValidateUser(username, password):
-    #print('Validating User : "%s"' % (username))
-
     session = Session()
 
     user = session.query(Account).filter_by(username=username).first()
 
     if user == None:
-        print('NoValuesFound')
 
         session.close()
 
@@ -82,11 +80,9 @@ def ValidateUser(username, password):
         return 0
 
 def CheckFileExists(args):
-    #print('Checking File : "%s" for User : "%s"' % (url, userid))
     url    = args[0]
     userid = args[1]
 
-    # Creates a session on the database
     session = Session()
 
     if session.query(File).filter_by(address=url).count() > 0:
@@ -96,17 +92,16 @@ def CheckFileExists(args):
 
         if session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).count() > 0:
             #File exists for user
-            result = CompareFile(url, userid)
+            CompareFile(url, userid)
         else:
             # File does not exist for user
-            result = CreateAssociation(url, userid)
+            CreateAssociation(url, userid)
     else:
         #File does not exist
         AddFileToDatabase(url)
-        result = CreateAssociation(url, userid)
+        CreateAssociation(url, userid)
 
     session.close()
-    return result
 
 def AddFileToDatabase(url):
     #print('Creating File : "%s"' % (url))
@@ -122,8 +117,7 @@ def AddFileToDatabase(url):
     session.close()
 
 def CreateAssociation(url, userid):
-    #print('Creating an association between File : "%s" for User : "%s' % (url, userid))
-
+    #print('Creating association between user "%s" and file "%s"' % (userid, url))
     session = Session()
 
     user = session.query(Account).filter_by(id=userid).one()
@@ -135,11 +129,10 @@ def CreateAssociation(url, userid):
     session.add(accountfile)
     session.commit()
     session.close()
-    return (url, 'File Linked')
+    AddMessage(userid, 'File Linked,' + str(url))
 
 def CompareFile(url, userid):
-    #print('Comparing file : "%s" for user : "%s' % (url, userid))
-
+    #print('Comparing file for user "%s" and file "%s"' % (userid, url))
     session = Session()
 
     user = session.query(Account).filter_by(id=userid).first()
@@ -152,23 +145,20 @@ def CompareFile(url, userid):
 
     if new_hash != last_hash:
         session = Session()
-        #hash has changed
-        #print('File : %s has changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
-        #Store new hash as last_hash
-        accountfile.last_hash = file.hash
+
+        session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).update(dict(last_hash=new_hash))
+
         session.commit()
         session.close()
-        return (url, 'File has changed')
-    elif new_hash != last_hash:
-        #Hash has not changed
-        #print('File : %s has not changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
-        return (url, 'File not changed')
+
+        AddMessage(userid, 'File Changed,' + str(url))
+    elif new_hash == last_hash:
+        AddMessage(userid, 'File Unchanged,' + str(url))
     session.close()
 
 def SchedulerCompareFile(args):
     userid = args[0]
     fileid = args[1]
-    #print('Comparing file : "%s" for user : "%s' % (url, userid))
 
     session = Session()
 
@@ -182,20 +172,19 @@ def SchedulerCompareFile(args):
     new_hash = GetHash(file.address)
     last_hash = accountfile.last_hash
 
+    #print('Last Hash "%s" \nNew Hash "%s"' % (last_hash,new_hash))
+
     if new_hash != last_hash:
         session = Session()
-        #hash has changed
-        #print('File : %s has changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
-        #Store new hash as last_hash
-        accountfile.last_hash = file.hash
+
+        session.query(AccountFile).filter_by(account_id=user.id, file_id=file.id).update(dict(last_hash=new_hash))
+
         session.commit()
         session.close()
-        return (url, 'File has changed')
+
+        AddMessage(userid, 'File Changed,' + str(url))
     elif new_hash == last_hash:
-        #Hash has not changed
-        #print('File : %s has not changed. New Hash : "%s". Old Hash : "%s"' % (url, new_hash, last_hash))
-        return (url, 'File not changed')
-    session.close()
+        AddMessage(userid, 'File Unchanged,' + str(url))
 
 def GetHash(url):
     #print('Getting hash for File : "%s"' % (url))
@@ -210,18 +199,36 @@ def GetHash(url):
 
     return hash.hexdigest()
 
-def GetAllFiles():
-    #print('Displaying all File Records')
+def GetAllUsers():
+    print('Displaying all User Records')
     session = Session()
 
-    filelist = session.query(File)
+    userlist = session.query(Account).all()
+    users = []
+
+    #for user in userlist:
+    #    print('User Message : "%s"' % (user.messages))
+    #    users.append(user.username)
+
+    for user in userlist:
+        print(user)
+
+    for user in userlist:
+        print(user.messages)
+
+def GetAllFiles():
+    print('Displaying all File Records')
+    session = Session()
+
+    filelist = session.query(File).all()
     files = []
 
-    for file in filelist:
-        #print('File : "%s"' % (file))
-        files.append(file.url)
+    #for file in filelist:
+    #    print('File : "%s"' % (file))
+    #    files.append(file.url)
 
-    return files
+    for file in filelist:
+        print(file.address)
 
 def GetAllAssocations():
     session = Session()
@@ -236,61 +243,108 @@ def GetAllAssocations():
 
     return associations
 
-def CheckUsernameUnique(username):
-
+def AddMessage(userid, Message):
     session = Session()
 
-    user = session.query(Account).filter_by(username=username).first()
+    user = session.query(Account).filter_by(id=userid).first()
+
+    if type(user.messages) is type(None):
+        print('Some message')
+        session.query(Account).filter_by(id=userid).update(dict(messages=Message))
+        session.commit()
+        session.close()
+    else:
+        print('None message')
+        FinalMessage = user.messages + ',' + Message
+        session.query(Account).filter_by(id=userid).update(dict(messages=FinalMessage))
+        session.commit()
+        session.close()
+
+
+def GetMessages(userid):
+    session = Session()
+
+    if userid is not 0 or None:
+        user = session.query(Account).filter_by(id=userid).first()
+        if user is not None:
+            if user.messages is not '' and user.messages is not None:
+                messages = user.messages.split(',')
+
+                session.query(Account).filter_by(id=userid).update(dict(messages=None))
+                session.commit()
+                session.close()
+
+                messages = iter(messages)
+
+                Data = []
+
+                AllData        = []
+                LinkedFiles    = []
+                ChangedFiles   = []
+                UnChangedFiles = []
+
+                Data = zip(messages, messages)
+
+                Data1 = list(Data)
+                Data2 = list(Data)
+                Data3 = list(Data)
+                Data4 = list(Data)
+
+                for item in Data1:
+                    #print('Data 1 : "%s" "%s"' % (str(item[0]), str(item[1])))
+                    AllData.append(item)
+
+                for item in Data2:
+                    #print('Data 2 : "%s" "%s"' % (str(item[0]), str(item[1])))
+                    if item[0] == 'File Linked':
+                        LinkedFiles.append(item)
+
+                for item in Data3:
+                    #print('Data 3 : "%s" "%s"' % (str(item[0]), str(item[1])))
+                    if item[0] == 'File Changed':
+                        ChangedFiles.append(item)
+
+                for item in Data4:
+                    print('Data 4 : "%s" "%s"' % (str(item[0]), str(item[1])))
+                    if item[0] == 'File Unchanged':
+                        print('Got unchanged')
+                        UnChangedFiles.append(item)
+
+                Data = []
+
+                Data.append(AllData)
+                print(AllData)
+                Data.append(LinkedFiles)
+                print(LinkedFiles)
+                Data.append(ChangedFiles)
+                print(ChangedFiles)
+                Data.append(UnChangedFiles)
+                print(UnChangedFiles)
+
+                return Data
 
     session.close()
 
-    if user is None:
-        return True
-    else:
-        return False
-
-def CheckEmailUnique(email):
-
+def CheckUser(userid):
     session = Session()
 
-    user = session.query(Account).filter_by(email=email).first()
+    user = session.query(Account).filter_by(id=userid).first()
 
     session.close()
 
-    if user is None:
-        return True
-    else:
-        return False
+    return user.active
 
-def sendEmail(email, username):
-    import smtplib
-    SUBJECT = "Changed pdf's"
-    TEXT = "Hi " + username + ", here are the list of pdfs that have been changed this week: \n" + str(PDFlist)
+def ConfirmUser(userid):
+    session = Session()
 
-    content = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
-    s = smtplib.SMTP('smtp.live.com', 587)
-    s.ehlo()
-    s.starttls()
-    s.login('pdfsender@hotmail.com', 'Ilovepdf1')
+    user = session.query(Account).filter_by(id=userid).first()
 
-    s.sendmail('pdfsender@hotmail.com', email, content)
-    s.quit()
-    print("Email sent" + email)
+    user.active = True
 
+    session.commit(user)
 
-def ConfirmEmail(email,username):
-    import smtplib
+    session.close()
 
-
-    SUBJECT = "Welcome to the PDF scraper"
-    TEXT = "Hi " + username + ", you have now signed up to the web scraping website. We hope you enjoy this service. \n"
-
-    content = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
-    s = smtplib.SMTP('smtp.live.com', 587)
-    s.ehlo()
-    s.starttls()
-    s.login('pdfsender@hotmail.com', 'Ilovepdf1')
-
-    s.sendmail('pdfsender@hotmail.com', email, content)
-    s.quit()
-    print("Email sent" + email)
+if __name__ == '__main__':
+    GetAllFiles()
+    GetAllUsers()

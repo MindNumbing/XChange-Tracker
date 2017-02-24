@@ -4,7 +4,7 @@
         <div class="col-xs-12">
             <div class="pull-right">
             <form class="form-horizontal" method="POST" action="/logout" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
-                <input id="logout" type="submit" value="Log Out1" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
+                <input id="logout" type="submit" value="Log Out" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
             </form>
         </div>
         <div class="pull-right">
@@ -20,19 +20,19 @@
             <strong>{{Message}}</strong>
         </div>
     {% endif %}
-    <div class="alert">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        <h3>
-            The webpage is used to find if there has been updates to PDF files on a website.
-            <br>
-            <br>
-            To use the web scraper, Sign up and then go to the Web Scraping Tool Page, and copy and paste the url of webpage you want to check and hit the search button.
-            <br>
-            <br>
-            This will then allow you to see what PDF's have been updated and when on a table below the search bar.
-        </h3>
-    </div>
     {% if not User %}
+        <div class="alert">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <h3>
+                The webpage is used to find if there have been updates to files on a website.
+                <br>
+                <br>
+                To use the web scraper, Sign up and then go to the Web Scraping Tool Page, and copy and paste the url of web page you want to check and hit the search button.
+                <br>
+                <br>
+                This will then allow you to see what Files have been updated and when on a table below the search bar.
+            </h3>
+        </div>
         <div class="Account">
             <div class="col-xs-12 col-md-6 signup">
                 <form data-toggle="validator" role="form" class="form-horizontal" method="POST" action="/signup">
@@ -114,22 +114,83 @@
                 </form>
             </div>
         </div>
-        <div class="data">
-            {% if Data %}
-                <h2  align="center">PDF's</h2>
-                <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5", width="50%", align="center">
-                    <tr>
-                        <td>File Address</td>
-                        <td>Status</td>
-                    </tr>
-                    {% for tuple in Data %}
-                        <tr>
-                            <td><a href="{{ tuple[0] }}">{{ tuple[0] }}</a></td>
-                            <td>{{ tuple[1] }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
-        </div>
+        {% if Data %}
+            <ul class="nav nav-tabs">
+                {% if AllData %}<li class="active"><a data-toggle="tab" href="#AllFiles">All Files</a></li>{% endif %}
+                {% if LinkedFiles %}<li><a data-toggle="tab" href="#LinkedFiles">Linked Files</a></li>{% endif %}
+                {% if ChangedFiles %}<li><a data-toggle="tab" href="#ChangedFiles">Changed Files</a></li>{% endif %}
+                {% if UnChangedFiles %}<li><a data-toggle="tab" href="#UnChangedFiles">Unchanged Files</a></li>{% endif %}
+            </ul>
+            <div class="tab-content">
+                {% if AllData %}
+                    <div id="AllFiles" class="tab-pane fade in active">
+                        <h2  align="center">All Files</h2>
+                        <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5" width="80%" align="center">
+                            <tr>
+                                <td>Status</td>
+                                <td>File Address</td>
+                            </tr>
+                            {% for tuple in AllData %}
+                                <tr>
+                                    <td>{{ tuple[0] }}</td>
+                                    <td><a href="{{ tuple[1] }}">{{ tuple[1] }}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+                {% if LinkedFiles %}
+                    <div id="LinkedFiles" class="tab-pane fade">
+                        <h2  align="center">Changed Files</h2>
+                        <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5" width="80%" align="center">
+                            <tr>
+                                <td>Status</td>
+                                <td>File Address</td>
+                            </tr>
+                            {% for tuple in LinkedFiles %}
+                                <tr>
+                                    <td>{{ tuple[0] }}</td>
+                                    <td><a href="{{ tuple[1] }}">{{ tuple[1] }}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+                {% if ChangedFiles %}
+                    <div id="ChangedFiles" class="tab-pane fade">
+                        <h2  align="center">Changed Files</h2>
+                        <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5" width="80%" align="center">
+                            <tr>
+                                <td>Status</td>
+                                <td>File Address</td>
+                            </tr>
+                            {% for tuple in ChangedFiles %}
+                                <tr>
+                                    <td>{{ tuple[0] }}</td>
+                                    <td><a href="{{ tuple[1] }}">{{ tuple[1] }}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+                {% if UnChangedFiles %}
+                    <div id="UnChangedFiles" class="tab-pane fade">
+                        <h2  align="center">Changed Files</h2>
+                        <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5" width="80%" align="center">
+                            <tr>
+                                <td>Status</td>
+                                <td>File Address</td>
+                            </tr>
+                            {% for tuple in UnChangedFiles %}
+                                <tr>
+                                    <td>{{ tuple[0] }}</td>
+                                    <td><a href="{{ tuple[1] }}">{{ tuple[1] }}</a></td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
     {% endif %}
 {%  endblock %}

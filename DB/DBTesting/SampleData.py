@@ -78,25 +78,25 @@ assoc2 = session.query(AccountFile).filter_by(account_id=1, file_id=2).first()
 assoc3 = session.query(AccountFile).filter_by(account_id=2, file_id=1).first()
 assoc4 = session.query(AccountFile).filter_by(account_id=2, file_id=2).first()
 
-print()
-print('Accounts :-')
-print()
+#print()
+#print('Accounts :-')
+#print()
 accounts = session.query(Account)
-for account in accounts:
-    print('- Account : "%s" is called : "%s". Has the email : "%s" and password : "%s". It is linked to the files : "%s"' % (account.id, account.username, account.email, account.password, account.files))
+#for account in accounts:
+    #print('- Account : "%s" is called : "%s". Has the email : "%s" and password : "%s". It is linked to the files : "%s"' % (account.id, account.username, account.email, account.password, account.files))
 
-print()
-print('Files :-')
-print()
+#print()
+#print('Files :-')
+#print()
 files = session.query(File)
-for file in files:
-    print('- File : "%s" and has the address : "%s" and the hash : "%s"' % (file.id, file.address, file.hash))
+#for file in files:
+    #print('- File : "%s" and has the address : "%s" and the hash : "%s"' % (file.id, file.address, file.hash))
 
-print()
-print('Account Files :-')
-print()
+#print()
+#print('Account Files :-')
+#print()
 accountFiles = session.query(AccountFile)
-for accountFile in accountFiles:
-    print('- Account_File has the account : "%s", the file : "%s" and the special key : "%s"' % (accountFile.account_id, accountFile.file_id, accountFile.last_hash))
+#for accountFile in accountFiles:
+    #print('- Account_File has the account : "%s", the file : "%s" and the special key : "%s"' % (accountFile.account_id, accountFile.file_id, accountFile.last_hash))
 
 session.close()

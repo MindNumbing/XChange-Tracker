@@ -18,6 +18,7 @@ class Account(Base):
     email        = Column(String(254), unique=True)
     password     = Column(String(1024))
     active       = Column(Boolean())
+    messages     = Column(String())
 
     # association proxy of "account_Files" collection
     # to "file" attribute
