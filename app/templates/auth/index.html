@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{%  block content %}
+#TODO Show flash messages
+
+#TODO Show logout button
+    <div class="col-xs-12">
+        <div class="pull-right">
+            <form class="form-horizontal" method="POST" action="/logout" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
+                <input id="logout" type="submit" value="Log Out1" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
+            </form>
+        </div>
+    </div>
+#TODO Show web scraper
+   <div class="Scraper">
+       <div class="col-xs-12">
+           <form class="form-horizontal" method="POST" action="/scrape">
+               <label class="col-md-4 control-label" for="webpage">Website</label>
+               <div class="col-md-4">
+                   <input id="webpage" name="webpage" type="text" placeholder="https://www." class="form-control input-md" required="">
+                   <span class="help-block">E.G "https://www.google.co.uk/"</span>
+               </div>
+               <div class="col-md-4">
+                   <button id="search" name="search" class="btn btn-success">Search</button>
+               </div>
+           </form>
+       </div>
+   </div>
+#TODO Show all files
+    <div class="data">
+        {% if Data %}
+            <h2  align="center">PDF's</h2>
+                <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5" width="50%" align="center">
+                    <tr>
+                        <td>File Address</td>
+                        <td>Status</td>
+                    </tr>
+                    {% for tuple in Data %}
+                        <tr>
+                            <td><a href="{{ tuple[0] }}">{{ tuple[0] }}</a></td>
+                            <td>{{ tuple[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+        {% endif %}
+    </div>
+{% endblock %}

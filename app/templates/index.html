@@ -1,26 +1,20 @@
 {% extends "base.html" %}
 {%  block content %}
-    {% if User %}
-        <div class="col-xs-12">
-            <div class="pull-right">
-            <form class="form-horizontal" method="POST" action="/logout" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
-                <input id="logout" type="submit" value="Log Out1" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
-            </form>
-        </div>
+<!--#TODO Show flash messages-->
+    <div class="col-xs-12">
         <div class="pull-right">
-            <form class="form-horizontal" method="POST" action="/" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
-                <input id="logout" type="submit" value="User Preferences" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
+            <!--#TODO Show signup button-->
+            <form class="form-horizontal" method="POST" action="/auth/login" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
+                <input id="signup" type="submit" value="Log In" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
             </form>
+            <!--#TODO Show login button-->
+            <!--<form class="form-horizontal" method="POST" action="/signin" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
+                <input id="signin" type="submit" value="Sign In" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
+            </form>-->
         </div>
-        </div>
-    {% endif %}
-    {% if Message %}
-        <div class="alert alert-warning">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <strong>{{Message}}</strong>
-        </div>
-    {% endif %}
-    <div class="alert">
+    </div>
+<!--#TODO Show instruction text-->
+    <div class="alert col-xs-12">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
         <h3>
             The webpage is used to find if there has been updates to PDF files on a website.
@@ -32,104 +26,22 @@
             This will then allow you to see what PDF's have been updated and when on a table below the search bar.
         </h3>
     </div>
-    {% if not User %}
-        <div class="Account">
-            <div class="col-xs-12 col-md-6 signup">
-                <form data-toggle="validator" role="form" class="form-horizontal" method="POST" action="/signup">
-                    <fieldset>
-                        <legend>Sign Up</legend>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="signupUsername">Username</label>
-                            <div class="col-md-5">
-                                <input id="signupUsername" name="signupUsername" type="text" placeholder="" class="form-control input-md" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="signupEmail">Email</label>
-                            <div class="col-md-5">
-                                <input id="signupEmail" name="signupEmail" type="email" placeholder="someone@example.com" class="form-control input-md" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="signupPassword">Password</label>
-                            <div class="col-md-5">
-                                <input type="password" name="signupPassword" data-minlength="6" class="form-control" id="signupPassword" placeholder="******" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="signupPasswordConfirm">Confirm Password</label>
-                            <div class="col-md-5">
-                                <input type="password" name="signupPasswordConfirm" class="form-control" id="signupPasswordConfirm" placeholder="******" required>
-                                <div class="help-block with-errors"></div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="singlebutton"></label>
-                            <div class="col-md-4">
-                                <input id="signup" type="submit" value="Sign Up" name="singlebutton" class="btn btn-primary">
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-            <div class="col-xs-12 col-md-6 login">
-                <form class="form-horizontal" method="POST" action="/login">
-                    <fieldset>
-                        <legend>Login</legend>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="loginUsername">Username</label>
-                            <div class="col-md-5">
-                                <input id="loginUsername" name="loginUsername" type="text" placeholder="" class="form-control input-md" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="loginPassword">Password</label>
-                            <div class="col-md-5">
-                                <input id="loginPassword" name="loginPassword" type="password" placeholder="********" class="form-control input-md" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-4 control-label" for="singlebutton"></label>
-                            <div class="col-md-4">
-                                <input id="login" type="submit" value="Login" name="singlebutton" class="btn btn-primary">
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-    {% endif %}
-    {% if User %}
-        <div class="Scraper">
-            <div class="col-xs-12">
-                <form class="form-horizontal" method="POST" action="/send">
-                    <label class="col-md-4 control-label" for="webpage">Website</label>
-                    <div class="col-md-4">
-                        <input id="webpage" name="webpage" type="text" placeholder="https://www." class="form-control input-md" required="">
-                        <span class="help-block">E.G "https://www.google.co.uk/"</span>
-                    </div>
-                    <div class="col-md-4">
-                        <button id="search" name="search" class="btn btn-success">Search</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="data">
-            {% if Data %}
-                <h2  align="center">PDF's</h2>
-                <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5", width="50%", align="center">
+<!--#TODO Show all files-->
+    <div class="data">
+        {% if Data %}
+            <h2  align="center">PDF's</h2>
+            <table style="margin-top: 50px; margin-bottom: 50px" border = 2, cellpadding="5", width="50%", align="center">
+                <tr>
+                    <td>File Address</td>
+                    <td>Status</td>
+                </tr>
+                {% for tuple in Data %}
                     <tr>
-                        <td>File Address</td>
-                        <td>Status</td>
+                        <td><a href="{{ tuple[0] }}">{{ tuple[0] }}</a></td>
+                        <td>{{ tuple[1] }}</td>
                     </tr>
-                    {% for tuple in Data %}
-                        <tr>
-                            <td><a href="{{ tuple[0] }}">{{ tuple[0] }}</a></td>
-                            <td>{{ tuple[1] }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
-        </div>
-    {% endif %}
-{%  endblock %}
+                {% endfor %}
+            </table>
+        {% endif %}
+    </div>
+{% endblock %}

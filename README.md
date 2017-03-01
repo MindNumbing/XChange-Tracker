@@ -1,1 +1,0 @@
-This is a web application for scraping

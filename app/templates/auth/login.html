@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{%  block content %}
+    {% macro render_field(field, placeholder=None) %}
+        {% if field.errors %}
+            <div>
+                {% elif field.flags.error %}
+                    <div>
+                        {% else %}
+                            <div>
+                                {% endif %}
+                                {% set css_class = 'form-control ' + kwargs.pop('class', '') %}
+                                {{ field(class=css_class, placeholder=placeholder, **kwargs) }}
+                            </div>
+                    </div>
+             </div>
+    {% endmacro %}
+
+    <div>
+        <div>
+            <legend>Log in</legend>
+            {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                {% if errors %}
+                    <div>
+                        {% for error in errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% if form.errors %}
+                <div>
+                    {% for field, error in form.errors.items() %}
+                        {% for e in error %}
+                            {{ e }}<br>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <form method="POST" action="/auth/login" accept-charset="UTF-8" role="form">
+                {{ form.csrf_token }}
+                {{ render_field(form.username, placeholder="Your username", autofocus="") }}
+                {{ render_field(form.password, placeholder="Password") }}
+                {{ render_field(form.remember_me) }}
+                <div>
+                    <button type="submit" name="submit">Log in</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
