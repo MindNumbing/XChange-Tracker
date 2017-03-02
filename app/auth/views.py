@@ -52,6 +52,7 @@ def signup():
 
     return render_template("auth/index.html", form=form)
 
+@auth.route('/')
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
@@ -62,6 +63,9 @@ def login():
         if user:
             if login_user(user):
                 print(current_user.username)
+                if user.permission == 'Admin':
+                    print('Setting Admin')
+                    session['User'] = 'Admin'
                 return redirect(url_for('auth.auth_index'))
         error = 'Invalid username or password.'
     return render_template('auth/login.html', form=form, error=error)
