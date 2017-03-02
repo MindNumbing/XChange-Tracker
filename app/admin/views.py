@@ -5,10 +5,10 @@ from app.database.db import db_session
 from app.auth.model import User
 from app.database.model import File
 from flask import Blueprint
-
+from flask_login import login_user, logout_user, login_required, current_user
 
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
-adminBlueprint = Blueprint('adminPage', __name__, url_prefix='/admin')
+adminBlueprint = Blueprint('adminPage', __name__)
 
 #Flask admin initalisation below
 admin = Admin(app, name='Admin page', template_mode='bootstrap3')
