@@ -1,5 +1,6 @@
 import os
 import logging
+from datetime import timedelta
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -17,4 +18,4 @@ THREADS_PER_PAGE = 2
 SECRET_KEY             = '9JWaSYx7VJR£WGQE0Edvcv4rSJbXSRzml8yqhW%b1165ghMJxvWU0WVYNMFBDi'
 SECURITY_PASSWORD_SALT = '9SRpHWTIW^rGbyMnIpJZWmmel0X8rVevSljpjw6R720kt*4CwmXXQrmrL1KfGR'
 
-#Scheduler.StartSoup()
+REMEMBER_COOKIE_DURATION = timedelta(days=3)

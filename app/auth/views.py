@@ -4,18 +4,19 @@ from flask import Blueprint, request, render_template, flash, g, session, redire
 from app import login_manager
 from flask_login import login_user, logout_user, login_required, current_user
 
+from app.soup import soup
+from datetime import datetime
 # Import password / encryption helper tools
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from app.database.functions import GetData
 from app.database.db import db_session
-
-from app import app
-
+from app.database.functions import GetHash
 # Import module forms
 from app.auth.forms import SignupForm, LoginForm
 
 # Import module models (i.e. User)
 from app.auth.model import User
+from app.database.model import File
 
 # Define the blueprint: 'auth', set its url prefix: app.url/auth
 auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -61,17 +62,33 @@ def login():
         if user:
             if login_user(user):
                 print(current_user.username)
-                return redirect(url_for('auth.secret'))
-            error = 'Invalid username or password.'
+                return redirect(url_for('auth.auth_index'))
+        error = 'Invalid username or password.'
     return render_template('auth/login.html', form=form, error=error)
 
-@auth.route('/logout', methods=['GET'])
+@auth.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('index'))
 
-@auth.route('/secret', methods=['GET'])
+@auth.route('/index', methods=['GET'])
 @login_required
-def secret():
-    return 'This is a secret page. You are logged in as {}'.format(current_user.username)
+def auth_index():
+    return render_template('auth/index.html', Data=GetData())
+
+@auth.route('/scrape', methods=['POST'])
+@login_required
+def index():
+    name = request.form['name']
+    website = request.form['webpage']
+
+    Files = soup.MakeSoup(website)
+    for file in Files:
+        temp = File(website=name, file_address=file, date=datetime.now(), hash=GetHash(website))
+        if db_session.query(File).filter_by(file_address=temp.website).first() is None:
+            db_session.add(temp)
+            db_session.commit()
+            print('Added Website %s, File Address %s, Date %s, Hash %s' % (temp.website, temp.file_address, temp.date, temp.hash))
+
+    return redirect(url_for('auth.auth_index'))

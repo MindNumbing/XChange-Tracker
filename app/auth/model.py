@@ -25,16 +25,8 @@ class User(Base):
 
     def is_authenticated(self):
         """Return True if the user is authenticated."""
-        return True
-        #return self.authenticated
+        return False
 
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False
-
-    def __repr__(self):
-        return '<User %r>' % (self.username)
-
-    def __init__(self, username, password):
-        self.username      = username
-        self.password      = password

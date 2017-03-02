@@ -18,4 +18,4 @@ class SignupForm(Form):
 class LoginForm(Form):
     username    = StringField('Username',   [DataRequired(message='Username required'), validators.Length(min=4, max=60)])
     password    = PasswordField('Password', [DataRequired(message='Password required'), validators.Length(min=6, max=200)])
-    remember_me = BooleanField(u'Remember Me')
+    #remember_me = BooleanField(u'Remember Me')

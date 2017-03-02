@@ -11,7 +11,7 @@ if db_session.query(User).filter_by(username='Steven.Marshall').first():
     db_session.commit()
 
 user = User(username='Steven.Marshall', password=generate_password_hash('Password'))
-user.authenticated = True
+user.authenticated = False
 
 db_session.add(user)
 db_session.commit()
