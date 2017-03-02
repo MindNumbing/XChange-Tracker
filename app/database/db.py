@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from os import path
+from werkzeug.security import generate_password_hash
 
 basedir = path.abspath(path.dirname(__file__))
 

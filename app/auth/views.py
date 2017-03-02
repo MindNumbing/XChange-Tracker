@@ -86,9 +86,11 @@ def index():
     Files = soup.MakeSoup(website)
     for file in Files:
         temp = File(website=name, file_address=file, date=datetime.now(), hash=GetHash(website))
-        if db_session.query(File).filter_by(file_address=temp.website).first() is None:
+        result = db_session.query(File).filter_by(file_address=file).first()
+        if result is None:
             db_session.add(temp)
             db_session.commit()
             print('Added Website %s, File Address %s, Date %s, Hash %s' % (temp.website, temp.file_address, temp.date, temp.hash))
+        print('Website already created : %s' % (file))
 
     return redirect(url_for('auth.auth_index'))

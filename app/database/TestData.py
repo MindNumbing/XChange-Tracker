@@ -4,14 +4,17 @@ from app.database.model import File
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
-if db_session.query(User).filter_by(username='Steven.Marshall').first():
-    user = db_session.query(User).filter_by(username='Steven.Marshall').one()
-
+if db_session.query(User).filter_by(username='Admin').first():
+    user = db_session.query(User).filter_by(username='Admin').first()
     db_session.delete(user)
     db_session.commit()
 
-user = User(username='Steven.Marshall', password=generate_password_hash('Password'))
-user.authenticated = False
+if db_session.query(User).filter_by(username='User').first():
+    user = db_session.query(User).filter_by(username='User').first()
+    db_session.delete(user)
+    db_session.commit()
 
-db_session.add(user)
+user1 = User(username='Admin', password=generate_password_hash('Neueda2017'), permission='Admin')
+user2 = User(username='User', password=generate_password_hash('Neueda2017'), permission='User')
+db_session.add_all({user1, user2})
 db_session.commit()

@@ -13,9 +13,6 @@ def shutdown_session(exception=None):
 @app.route('/')
 @app.route('/index')
 def index():
-
-    # TODO Add Data
-    data = {('Example File ID', 'Example Website', 'Example File Address', 'Example Date', 'Example Hash')}
     return render_template('index.html', Data=GetData())
 
 @app.route('/404', methods=['GET'])
