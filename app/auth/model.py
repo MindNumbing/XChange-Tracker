@@ -11,7 +11,7 @@ class User(Base):
     __tablename__ = 'User'
     id            = db.Column(db.Integer, primary_key=True)
     username      = db.Column(db.String(64), index=True, unique=True)
-    password      = db.Column(db.String(40), index=True, unique=True)
+    password      = db.Column(db.String(40), index=True)
     permission    = db.Column(db.String)
 
     #files = db.relationship('File', backref='creator', lazy='dynamic')

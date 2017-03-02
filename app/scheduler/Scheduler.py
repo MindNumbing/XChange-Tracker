@@ -8,6 +8,7 @@ from app.database.functions import GetHash
 from app.database.model import File
 
 def CheckFiles():
+    print('Checking file')
     Files = db_session.query(File).all()
 
     numberOfProcesses = (cpu_count() * 2)
@@ -17,6 +18,7 @@ def CheckFiles():
     pool.map_async(CompareFile, Files)
 
 def CompareFile(fileid):
+    print('Checking file')
     file = db_session.query(File).filter_by(id=fileid).first()
 
     new_hash = GetHash(file.address)
@@ -27,8 +29,3 @@ def CompareFile(fileid):
         file.current_date = datetime.now()
 
         db_session.commit()
-
-if __name__ != '__main__':
-    sched = BackgroundScheduler()
-    sched.add_job(CheckFiles, 'interval', hours=1)
-    sched.start()

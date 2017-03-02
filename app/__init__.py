@@ -40,3 +40,5 @@ def shutdown_session(exception=None):
     db_session.remove()
 
 from app import views
+
+from app import scheduler
