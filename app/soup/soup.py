@@ -1,28 +1,28 @@
 from bs4 import BeautifulSoup
-import urllib.request
+from urllib.request import urlopen
 from re import compile
+from config import FILETYPE
 
-filetype = '.pdf'
 
-def CheckForDuplicates(Files):
+def check_for_duplicates(files):
     seen = set()
-    for file in Files:
-        if file in seen:
-            print('Duplicate File : "%s"' % (file))
-        else:
+    for file in files:
+        if file not in seen:
             seen.add(file)
     return seen
 
-def MakeSoup(url):
-    global filetype
 
-    Website = urllib.request.urlopen(url)
-    soup = BeautifulSoup(Website, "html.parser")
+def make_soup(url):
+    try:
+        website = urlopen(url)
+    except ValueError:
+        return
+    soup = BeautifulSoup(website, "html.parser")
 
-    Files = []
-    for file in soup.findAll('a', href=compile(str(filetype))):
-        Files.append(file['href'])
+    files = []
+    for file in soup.findAll('a', href=compile(str(FILETYPE))):
+        files.append(file['href'])
 
-    Files = CheckForDuplicates(Files)
+    files = check_for_duplicates(files)
 
-    return Files
+    return files

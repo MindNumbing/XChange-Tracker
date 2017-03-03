@@ -1,28 +1,22 @@
 {% extends "base.html" %}
 {%  block content %}
-<!--#TODO Show flash messages-->
-{% if not User %}
-    <div class="col-xs-12">
-        <div class="pull-right">
-            <!--#TODO Show signup button-->
-            <form class="form-horizontal" method="POST" action="/auth/logout" style=" padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
-                <input id="signup" type="submit" value="Log Out" style="background-color: #39a8f4; color:#ffffff;" name="singlebutton" class="btn btn-sample">
-            </form>
-            <!--#TODO Show login button-->
-            <!--<form class="form-horizontal" method="POST" action="/signin" style="padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
-                <input id="signin" type="submit" value="Sign In" style="background-color: black; color:#ffffff;" name="singlebutton" class="btn btn-sample">
-            </form>-->
+    {% if not User %}
+        <div class="col-xs-12">
+            <div class="pull-right">
+                <form class="form-horizontal" method="POST" action="/auth/logout" style=" padding-top: 2px; padding-bottom:2px; padding-left: 5px;">
+                    <input id="signup" type="submit" value="Log Out" style="background-color: #39a8f4; color:#ffffff;" name="singlebutton" class="btn btn-sample">
+                </form>
+            </div>
         </div>
-    </div>
-<div class="Scraper">
-       <div class="col-xs-12">
-           <form class="form-horizontal" method="POST" action="/auth/scrape">
-               <div class="col-xs-12">
-                   <label class="col-md-4 control-label" for="webpage">Website Name</label>
+        <div class="Scraper">
+        <div class="col-xs-12">
+            <form class="form-horizontal" method="POST" action="/auth/scrape">
+                <div class="col-xs-12">
+                    <label class="col-md-4 control-label" for="webpage">Website Name</label>
                     <div class="col-md-4">
                         <input id="name" name="name" type="text" placeholder="" class="form-control input-md" required="">
                     </div>
-               </div>
+                </div>
                 <div class="col-xs-12">
                     <label class="col-md-4 control-label" for="webpage">Website</label>
                     <div class="col-md-4">
@@ -30,32 +24,13 @@
                         <span class="help-block">E.G "https://www.google.co.uk/"</span>
                     </div>
                 </div>
-               <div class="col-md-4 pull-right">
-                   <button id="search" name="search" class="btn btn-success">Search</button>
-               </div>
-           </form>
-       </div>
-   </div>
-<!--#TODO Show all files-->
-    <div class="data">
-
-        <div class="form-inline">
-            <button type="button"
-                class="btn btn-default mybtn-top">
-                Scroll to top
-            </button>
-            <button type="button"
-                class="btn btn-default mybtn-row">
-                Scroll to row index:
-            </button>
-                <input type="number"
-                    class="form-control row-index"
-                    value="3" min="0">
-            <button type="button"
-                class="btn btn-default mybtn-btm">
-                Scroll to bottom
-            </button>
+                <div class="col-md-4 pull-right">
+                    <button id="search" name="search" class="btn btn-success">Search</button>
+                </div>
+            </form>
         </div>
+    </div>
+    <div class="data">
         <div class="Data" style="padding: 10px; ">
             <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
 	        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
@@ -64,19 +39,18 @@
 	        <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
 	        <script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
              <script>
-                     $(document).ready(function() {
-                         $(document).ready(function () {
-                             var table = $('#table').DataTable({
-                                 lengthChange: false,
-                                 buttons: ['copy', 'pdf']
-                             });
-
-                             table.buttons().container()
-                                 .appendTo('#example_wrapper .col-sm-6:eq(0)');
+                 $(document).ready(function() {
+                     $(document).ready(function () {
+                         var table = $('#table').DataTable({
+                             lengthChange: false,
+                             buttons: ['copy', 'pdf']
                          });
+                         table.buttons().container()
+                             .appendTo('#example_wrapper .col-sm-6:eq(0)');
                      });
-                 </script>
-           <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                 });
+             </script>
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>File ID</th>
@@ -90,23 +64,13 @@
                     <tr>
                         <td>{{ row[0] }}</td>
                         <td>{{ row[1] }}</td>
-                        <td>{{ row[2] }}</td>
+                        <td><a href="{{ row[2] }}">{{ row[2] }}</a></td>
                         <td>{{ row[3] }}</td>
                         <td>{{ row[4] }}</td>
                     </tr>
                 {% endfor %}
-                <tfoot>
-                    <tr>
-                       <th>File ID</th>
-                        <th>website</th>
-                        <th>File Address</th>
-                        <th>Date Changed</th>
-                        <th>Hash</th>
-                    </tr>
-                </tfoot>
-           </table>
+            </table>
         </div>
     </div>
-</div>
-{% endif %}
+    {% endif %}
 {% endblock %}

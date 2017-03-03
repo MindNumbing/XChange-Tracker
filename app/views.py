@@ -1,23 +1,22 @@
-import timeit
-from multiprocessing import cpu_count
-from multiprocessing.dummy import Pool as ThreadPool
-from flask import render_template, redirect, request, session
+from flask import render_template, session
 from app import app
 from app.database.db import db_session
-from app.database.functions import GetData
-from flask_security import current_user
-from app.auth.model import User
+from app.database.functions import get_data
+from flask_login import current_user
 
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
 
 @app.route('/')
 @app.route('/index')
 def index():
     session['User'] = ''
-    return render_template('index.html', Data=GetData())
+    return render_template('index.html', Data=get_data())
 
-@app.route('/404', methods=['GET'])
-def page_not_found():
-    return render_template('404.html')
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html'), 404
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()

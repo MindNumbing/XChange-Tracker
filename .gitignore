@@ -35,7 +35,6 @@ pip-selfcheck.json
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
 *$py.class
 
 # C extensions
@@ -166,4 +165,3 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 /app/database/app.db
-/app/database/TestData.py
