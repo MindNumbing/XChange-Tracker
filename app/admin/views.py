@@ -5,6 +5,7 @@ from flask import session
 from app.database.functions import generate_hash, get_hash
 from datetime import datetime
 
+
 class MyIndexView(AdminIndexView):
     @expose('/')
     def index(self):

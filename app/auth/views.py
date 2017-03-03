@@ -62,7 +62,7 @@ def scrape():
     name = request.form['name']
     website = request.form['webpage']
 
-    flash('We are now currently scraping the website', 'success')
+    flash('The website has been scraped, please find your files below', 'success')
 
     files = soup.make_soup(website)
     if files is not None:
