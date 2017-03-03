@@ -2,7 +2,6 @@ from flask import render_template, session
 from app import app
 from app.database.db import db_session
 from app.database.functions import get_data
-from flask_login import current_user
 
 
 @app.route('/')

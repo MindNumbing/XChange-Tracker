@@ -20,7 +20,7 @@ def compare_files(fileid):
         if new_hash != file.hash:
             file.hash = new_hash
             file.date = datetime.now()
+            db_session.commit()
     else:
         file.hash = new_hash
-
-    db_session.commit()
+        db_session.commit()
