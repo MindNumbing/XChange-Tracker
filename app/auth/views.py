@@ -25,7 +25,6 @@ def login():
         if request.method == 'POST' and form.validate():
             user = db_session.query(User).filter_by(username=form.username.data).first()
             valid_password = verify_password(user.username, form.password.data)
-
             if user:
                 if valid_password:
                     login_user(user)
