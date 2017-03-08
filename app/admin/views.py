@@ -12,9 +12,7 @@ class MyIndexView(AdminIndexView):
         if session['User'] == 'Admin':
             return self.render('admin/index.html')
         elif session['User'] == 'User':
-            print('Returning to auth')
             return redirect(url_for('auth.auth_index'))
-        print('Returning to index')
         return redirect(url_for('index'))
 
 

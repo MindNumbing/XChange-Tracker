@@ -71,4 +71,7 @@ def scrape():
                 temp = File(website=name, file_address=file, date=datetime.now(), hash=get_hash(file))
                 db_session.add(temp)
                 db_session.commit()
+    else:
+        flash('There are no Files found on this website. Please check again, and note that only files that have a '
+              '".pdf" file ending will be searched', 'warning')
     return redirect(url_for('auth.auth_index'))

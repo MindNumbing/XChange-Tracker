@@ -26,10 +26,6 @@ def make_soup(url):
     for file in soup.findAll('a', href=compile(str(FILETYPE))):
         files.append(file['href'])
 
-    if files == []:
-        flash('No files found on provided website', 'info')
-        return
-
     files = check_for_duplicates(files)
 
     return files
