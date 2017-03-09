@@ -6,7 +6,7 @@ from urllib.request import urlopen
 from datetime import datetime
 from passlib.hash import pbkdf2_sha512
 import random
-
+from sqlalchemy import desc
 
 def get_hash(url):
     block_size = 65536
@@ -25,7 +25,7 @@ def get_hash(url):
 def get_data():
     data = []
 
-    files = db_session.query(File).all()
+    files = db_session.query(File).order_by(File.date.desc()).all()
 
     for file in files:
         data.append((file.id, file.website, file.file_address, datetime.strftime(file.date, '%d/%b/%Y - %H:%M'),
