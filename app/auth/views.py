@@ -3,7 +3,7 @@ from flask import Blueprint, request, render_template, session, redirect, url_fo
 from app import login_manager
 from app.soup import soup
 from app.database.db import db_session
-from app.database.functions import get_hash, get_data, verify_password
+from app.database.functions import get_hash, get_data, verify_password, get_file_name
 from app.database.model import File
 from app.auth.model import User
 from app.auth.forms import LoginForm
@@ -68,7 +68,7 @@ def scrape():
         for file in files:
             result = db_session.query(File).filter_by(file_address=file).first()
             if result is None:
-                temp = File(website=name, file_address=file, date=datetime.now(), hash=get_hash(file))
+                temp = File(website=name, file_name=get_file_name(file), file_address=file, date=datetime.now(), hash=get_hash(file))
                 db_session.add(temp)
                 db_session.commit()
     else:
