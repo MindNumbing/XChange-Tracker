@@ -36,7 +36,6 @@ def login():
                         flash('You are logged in as a User', 'success')
             return redirect(url_for('auth.auth_index'))
     else:
-        flash('You are already logged in', 'info')
         return redirect(url_for('auth.auth_index'))
     return render_template('auth/login.html', form=form)
 

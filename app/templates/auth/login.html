@@ -6,7 +6,7 @@
     {% endmacro %}
     <div>
     	<div>
-    		<legend>Log in</legend>
+    		<legend style="padding-left: 2%">Log in</legend>
     		<form method="POST" action="/auth/login" accept-charset="UTF-8" role="form">
     			{{ form.hidden_tag() }}
     			<div>
@@ -17,8 +17,9 @@
     				<div class="col-xs-8">
     					<p class="col-xs-3">Enter your Password : </p>
     					<div class="col-xs-5">{{ render_field(form.password, placeholder="Password") }}</div>
+						<div class="col-xs-8" style="padding-top: 1%"><button class="pull-right btn btn-success" type="submit" name="submit">Log in</button></div>
     				</div>
-    				<div class="col-xs-8 pull-right"><button class="pull-left btn btn-success" type="submit" name="submit">Log in</button></div>
+
     			</div>
     		</form>
     	</div>
