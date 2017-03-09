@@ -46,5 +46,7 @@ def verify_password(username, password):
 
 def get_file_name(file):
     name = re.findall('\/[^//]*$', file)[0]
-    name = re.compile('\w', name)
+    name = name[1:-4]
+    name = str.replace(name, '_', ' ')
+    name = str.replace(name, '-', ' ')
     return name
