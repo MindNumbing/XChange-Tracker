@@ -3,6 +3,7 @@ from urllib.request import urlopen
 from re import compile
 from config import FILETYPE
 from flask import flash
+import urllib
 
 
 def check_for_duplicates(files):
@@ -23,8 +24,11 @@ def make_soup(url):
     soup = BeautifulSoup(website, "html.parser")
 
     files = []
-    for file in soup.findAll('a', href=compile(str(FILETYPE))):
-        files.append(file['href'])
+    for file in soup.findAll('a'):
+        current_file = file.get('href')
+        if current_file.endswith('pdf'):
+            print(current_file)
+            files.append(current_file)
 
     files = check_for_duplicates(files)
 
